@@ -31,26 +31,46 @@ if __name__ == '__main__':
         print "\n"+"Client connected"
         client.send("Connection established"+"\n")
 
+        loginstatus = False
+
         while True:
-
-            client.send("Press 1 to create an account\nPress 2 to login\nPress 3 to manage your passwords\nPress 4 to exit")
-            response = client.recv(1024)
-
-            if response == '1':
-                create_account(client)
-
-            elif response == '2':
-                login(client)
-
-            elif response == '3':
-                manage_pass(client)
+            if loginstatus == True:
+                client.send("Press 1 to create an account\nPress 2 to log out\nPress 3 to manage your passwords\nPress 4 to exit")
+                response = client.recv(1024)
                 
-            elif response == '4':
-                shutdown = "Goodbye"
-                client.send(shutdown)
-                print "Server now closing"
-                sys.exit()
+                if response == '1':
+                    create_account(client)
+                
+                elif response == '2':
+                    loginstatus = False
+                    os.chdir("..")
+                    
+                elif response == '3':
+                    manage_pass(client)
+                    
+                elif response == '4':
+                    shutdown = "Goodbye"
+                    client.send(shutdown)
+                    print "Server now closing"
+                    sys.exit()
+                    
+                else:
+                    client.send("Choose a vaild option.\n")
 
-            else:
-                client.send("Choose a vaild option.\n")
+            elif loginstatus == False:
+                client.send("Press 1 to create an account\nPress 2 to login\nPress 3 to exit")
+                response = client.recv(1024)
+                if response == '1':
+                    create_account(client)
+                
+                elif response == '2':
+                    loginstatus = login(client,loginstatus)
+                    
+                elif response == '3':
+                    shutdown = "Goodbye"
+                    client.send(shutdown)
+                    print "Server now closing"
+                    sys.exit()
+                else:
+                    client.send("Choose a valid option.\n")
     client.close()
