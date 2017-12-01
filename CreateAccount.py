@@ -31,5 +31,7 @@ def create_account(client):
         else:
             client.send("Username taken, try again.\n")
 
+    #get hash of password (and maybe username) store those variables instead of storing the password itself
+            
     data_file.write(username + ", " + password + "\n")
     data_file.close()
