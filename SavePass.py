@@ -13,6 +13,8 @@ def save_pass(client)
         client.send("Enter a password:")
         password = str(client.recv(1024))
 
+#Convert username and password to encrypted data here and replace variables below with encrypted variables        
+        
 file = open("%s.txt" % entry,"w+")		
 file.write(username + ", " + password + "\n")
 file.close()
