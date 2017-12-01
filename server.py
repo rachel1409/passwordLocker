@@ -2,6 +2,7 @@ import socket
 import sys
 from CreateAccount import *
 from Login import *
+from ManagePass import *
 import no_bytecode
 
 def connect():
@@ -32,7 +33,7 @@ if __name__ == '__main__':
 
         while True:
 
-            client.send("Press 1 to create an account\nPress 2 to login\nPress 3 to exit")
+            client.send("Press 1 to create an account\nPress 2 to login\nPress 3 to manage your passwords\nPress 4 to exit")
             response = client.recv(1024)
 
             if response == '1':
@@ -42,6 +43,9 @@ if __name__ == '__main__':
                 login(client)
 
             elif response == '3':
+                manage_pass(client)
+                
+            elif response == '4':
                 shutdown = "Goodbye"
                 client.send(shutdown)
                 print "Server now closing"
