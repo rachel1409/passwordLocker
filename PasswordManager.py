@@ -4,6 +4,7 @@ import os.path
 import no_bytecode
 from SavePass import *
 from ReadPass import *
+from ClearScreen import *
 
 def manage_pass(client):
   tempbool = True
@@ -15,6 +16,7 @@ def manage_pass(client):
       save_pass(client)
       
     elif response == '2':
+      #clearscrn()
       read_pass(client)
     
     elif response == '3':
