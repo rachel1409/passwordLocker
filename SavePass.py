@@ -3,7 +3,7 @@ import os
 import os.path
 import no_bytecode
 
-def save_pass(client)
+def save_pass(client):
   client.send("Enter a name for this entry:")
   entry = str(client.recv(1024))
   client.send("Enter a username:")
