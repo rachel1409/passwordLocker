@@ -15,8 +15,8 @@ def manage_pass(client):
       save_pass(client)
       
     elif response == '2':
-    read_pass(client)
+      read_pass(client)
     
-  elif response == '3':
-    tempbool = False
+    elif response == '3':
+      tempbool = False
     
