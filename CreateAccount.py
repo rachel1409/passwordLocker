@@ -35,7 +35,7 @@ def create_account(client):
     #get hash of password (and maybe username) store those variables instead of storing the password itself
     
     directory = username
-    if not os.path.exists(directory):
+    if not os.path.exists(directory): #creates a directory named after the user that will act as the storage location for their passwords
         os.makedirs(directory)
     data_file.write(username + ", " + password + "\n")
     data_file.close()
