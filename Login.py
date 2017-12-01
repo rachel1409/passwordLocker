@@ -22,6 +22,7 @@ def login(client):
 
             if account in data_file.read():
                 client.send("You are logged in!\n\n")
+                os.chdir('%s' % username) #changes directory to the users directory
                 break
             else:
                 client.send("Incorrect username or password. Try again.\n")
