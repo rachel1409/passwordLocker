@@ -2,7 +2,7 @@ import socket
 import sys
 from CreateAccount import *
 from Login import *
-from ManagePass import *
+from PasswordManager import *
 import no_bytecode
 
 def connect():
