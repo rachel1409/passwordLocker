@@ -17,6 +17,7 @@ def create_account(client):
         if username not in read_file.read():
             if username != "":
                 while True:
+                    client.send("Your password must contain:\n-A minimum of 24 character\n-At least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 symbol.\n")
                     client.send("Enter a password:")
                     password = str(client.recv(1024))
 
