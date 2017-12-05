@@ -3,21 +3,22 @@ import os
 import os.path
 import no_bytecode
 from SavePass import *
+from rsa import *
 from ReadPass import *
 from ClearScreen import *
 
-def manage_pass(client):
+def manage_pass(client, key, clientkey):
   tempbool = True
   while tempbool == True:
-    client.send("Press 1 to save a username and password\nPress 2 to read a username and password\nPress 3 to go back to the main menu")
-    response = client.recv(1024)
+    client.send(rsaencrypt("Press:\n- 1 to save username/password\n- 2 to read username/password\n- 3 for main menu", clientkey))
+    response = rsadecrypt(client.recv(1024), key)
     
     if response == '1':
-      save_pass(client)
+      save_pass(client, key, clientkey)
       
     elif response == '2':
       #clearscrn()
-      read_pass(client)
+      read_pass(client, key, clientkey)
     
     elif response == '3':
       tempbool = False
