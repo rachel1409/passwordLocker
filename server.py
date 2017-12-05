@@ -3,6 +3,7 @@ import sys
 from CreateAccount import *
 from Login import *
 from PasswordManager import *
+from rsa import *
 import no_bytecode
 
 def connect():
@@ -29,48 +30,53 @@ if __name__ == '__main__':
 
     if client_connected == "Client connecting":
         print "\n"+"Client connected"
-        client.send("Connection established"+"\n")
+        pubkeyfile = 'server.pem'
+        key = gen_privkey()
+        save_pubkey(pubkeyfile, gen_pubkey(key))
+
+        client.send(pubkeyfile)
+        clientkey = get_pubkey(client.recv(1024))
 
         loginstatus = False
 
         while True:
             if loginstatus == True:
-                client.send("Press 1 to create an account\nPress 2 to log out\nPress 3 to manage your passwords\nPress 4 to exit")
-                response = client.recv(1024)
+                client.send(rsaencrypt("Press: \n- 1 to create account\n- 2 to log out\n- 3 to manage passwords\n- 4 to exit", clientkey))
+                response = rsadecrypt(client.recv(1024), key)
                 
                 if response == '1':
-                    create_account(client)
+                    create_account(client, key, clientkey)
                 
                 elif response == '2':
                     loginstatus = False
                     os.chdir("..")
                     
                 elif response == '3':
-                    manage_pass(client)
+                    manage_pass(client, key, clientkey)
                     
                 elif response == '4':
                     shutdown = "Goodbye"
-                    client.send(shutdown)
+                    client.send(rsaencrypt(shutdown, clientkey))
                     print "Server now closing"
                     sys.exit()
                     
                 else:
-                    client.send("Choose a vaild option.\n")
+                    client.send(rsaencrypt("Choose a vaild option.\n", clientkey))
 
             elif loginstatus == False:
-                client.send("Press 1 to create an account\nPress 2 to login\nPress 3 to exit")
-                response = client.recv(1024)
+                client.send(rsaencrypt("Press:\n- 1 to create an account\n- 2 to login\n- 3 to exit", clientkey))
+                response = rsadecrypt(client.recv(1024), key)
                 if response == '1':
-                    create_account(client)
+                    create_account(client, key, clientkey)
                 
                 elif response == '2':
-                    loginstatus = login(client,loginstatus)
+                    loginstatus = login(client,loginstatus, key, clientkey)
                     
                 elif response == '3':
                     shutdown = "Goodbye"
-                    client.send(shutdown)
+                    client.send(rsaencrypt(shutdown, clientkey))
                     print "Server now closing"
                     sys.exit()
                 else:
-                    client.send("Choose a valid option.\n")
+                    client.send(rsaencrypt("Choose a valid option.\n", clientkey))
     client.close()
