@@ -23,3 +23,6 @@ Additionally users cannot save or read passwords unless they are logged in.
 Crypto functions still need to be implemented.
 
 There is also a bug where once an unsuccessful login has been beformed a successful login cannot occur.
+
+12/4/17
+Pretty much all functionality has been added now we just need to iron out the bugs.
