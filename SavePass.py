@@ -5,6 +5,7 @@ import os.path
 import csv
 from PLcrypto import *
 from aes import *
+from ClearScreen import *
 import no_bytecode
 
 def checkVerification(client, message):
