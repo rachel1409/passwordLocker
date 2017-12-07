@@ -18,7 +18,7 @@ def checkVerification(client, message):
 def save_pass(client, key, clientkey, aeskey):
   client.send(PLencrypt("Enter a name for this entry:", key, aeskey))
   entry = checkVerification(client, PLdecrypt(client.recv(1024), clientkey, aeskey))
-  if not os.path.isfile("%s.csv" % entry)"
+  if not os.path.isfile("%s.csv" % (entry))"
     client.send(PLencrypt("Enter a username:", key, aeskey))
     username = checkVerification(client, PLdecrypt(client.recv(1024), clientkey, aeskey))
     client.send(PLencrypt("Enter a password:", key, aeskey))
