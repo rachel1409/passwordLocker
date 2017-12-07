@@ -1,14 +1,22 @@
 import socket
 import os
+import sys
 import csv
 import hashlib
 import no_bytecode
-from rsa import *
 from aes import *
+from PLcrypto import *
 from server import *
 
-def login(client,loginstatus, key, clientkey):
-    client.send(rsaencrypt("Login\n", clientkey))
+def checkVerification(client, message):
+    if not message:
+        client.shutdown(socket.SHUT_RDWR)
+        client.close()
+        sys.exit(1)
+    else:
+        return message
+
+def login(client, loginstatus, key, clientkey, aeskey):
     root_dir = os.getcwd()
     file_name = 'data.csv'
     file_path = os.path.join(root_dir, file_name)
@@ -16,37 +24,36 @@ def login(client,loginstatus, key, clientkey):
     #isEmpty = os.stat(file_name).st_size == 0
 
     if os.path.exists(file_path):#and not isEmpty:
+        message = ""
+        retval = ""
         with open(file_name, 'r') as f:
-            reader = csv.reader(file_name)
+            reader = csv.reader(f)
             for row in reader:
-                data[aesdecyrpt(row[0], gen_key())] = [row[1], row[2]]
+                data[aesdecrypt(row[0], enckey())] = [row[1], row[2]]
 
         while True:
-            client.send(rsaencrypt("Enter your username:", clientkey))
-            username = rsadecrypt(client.recv(1024), key)
+            client.send(PLencrypt(message+"Enter your username:", key, aeskey))
+            username = checkVerification(client, PLdecrypt(client.recv(1024), clientkey, aeskey))
             
-            client.send(rsaencrypt("Enter your password:", clientkey))
-            password = rsadecrypt(client.recv(1024), key)
-            
-            #account = username + ", " + password
+            client.send(PLencrypt("Enter your password:", key, aeskey))
+            password = checkVerification(client, PLdecrypt(client.recv(1024), clientkey, aeskey))
 
 #there is a bug here preventing a successful login after a failed login
 #** the data dictionary should fix this bug
 
             if username in data:
-                if username in line[0]:
-                    info = data[username]
-                    h = hashlib.sha256()
-                    h.update(password+aesdecrypt(info[1], gen_key()))
-                    if h.hexdigest() == aesdecrypt(info[0], gen_key()):
-                        client.send(rsaencrypt("You are logged in!\n\n", clientkey))
-                        loginstatus = True
-                        os.chdir('%s' % username)
-                        break
-                    else:
-                        client.send(rsaencrypt("Incorrect username or password. Try again.\n", clientkey))
+                info = data[username]
+                h = hashlib.sha256()
+                h.update(password+aesdecrypt(info[1], enckey()))
+                if h.hexdigest() == aesdecrypt(info[0], enckey()):
+                    retval = "You are logged in!\n"
+                    loginstatus = True
+                    os.chdir('%s' % username)
+                    break
+                else:
+                    message = "Incorrect username or password. Try again.\n"
             else:
-                client.send(rsaencrypt("Incorrect username or password. Try again.\n", clientkey))
+                message = "Incorrect username or password. Try again.\n"
     else:
-        client.send(rsaencrypt("No accounts have been made yet. Try creating an account.\n", clientkey))
-    return loginstatus
+        retval = "No accounts have been made yet. Try creating an account.\n"
+    return loginstatus, retval
