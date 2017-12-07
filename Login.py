@@ -38,9 +38,6 @@ def login(client, loginstatus, key, clientkey, aeskey):
             client.send(PLencrypt("Enter your password:", key, aeskey))
             password = checkVerification(client, PLdecrypt(client.recv(1024), clientkey, aeskey))
 
-#there is a bug here preventing a successful login after a failed login
-#** the data dictionary should fix this bug
-
             if username in data:
                 info = data[username]
                 h = hashlib.sha256()
