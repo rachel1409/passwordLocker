@@ -1,21 +1,30 @@
 import socket
 import os
+import sys
 import os.path
 import csv
-from rsa import *
+from PLcrypto import *
 from aes import *
 import no_bytecode
 
-def save_pass(client, key, clientkey):
-  client.send(rsaencrypt("Enter a name for this entry:", clientkey))
-  entry = rsadecrypt(client.recv(1024), key)
-  client.send(rsaencrypt("Enter a username:", clientkey))
-  username = rsadecrypt(client.recv(1024), key)
-  client.send(rsaencrypt("Enter a password:", clientkey))
-  password = rsadecrypt(client.recv(1024), key)
+def checkVerification(client, message):
+  if not message:
+    client.shutdown(socket.SHUT_RDWR)
+    client.close()
+    sys.exit(1)
+  else:
+    return message
+
+def save_pass(client, key, clientkey, aeskey):
+  client.send(PLencrypt("Enter a name for this entry:", key, aeskey))
+  entry = checkVerification(client, PLdecrypt(client.recv(1024), clientkey, aeskey))
+  client.send(PLencrypt("Enter a username:", key, aeskey))
+  username = checkVerification(client, PLdecrypt(client.recv(1024), clientkey, aeskey))
+  client.send(PLencrypt("Enter a password:", key, aeskey))
+  password = checkVerification(client, PLdecrypt(client.recv(1024), clientkey, aeskey))
 
   #Convert username and password to encrypted data here and replace variables below with encrypted variables        
 
   with open("%s.csv" % entry,"w+") as f:
     writer = csv.writer(f)
-    writer.writerow([aesencrypt(username, gen_key(), gen_iv()), aesencrypt(password, gen_key(), gen_iv())])
+    writer.writerow([aesencrypt(username, enckey("../"), gen_iv()), aesencrypt(password, enckey("../"), gen_iv())])
