@@ -1,9 +1,11 @@
 import socket
 import sys
+from ClearScreen import *
 from CreateAccount import *
 from Login import *
 from PasswordManager import *
 from rsa import *
+from PLcrypto import *
 import no_bytecode
 
 def connect():
@@ -16,6 +18,14 @@ def error_check(server, host, port):
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server.bind((host, port))
     server.listen(5)
+
+def checkVerification(client, message):
+    if not message:
+        client.shutdown(socket.SHUT_RDWR)
+        client.close()
+        sys.exit(1)
+    else:
+        return message
 
 if __name__ == '__main__':
     server = socket.socket()
@@ -33,50 +43,74 @@ if __name__ == '__main__':
         pubkeyfile = 'server.pem'
         key = gen_privkey()
         save_pubkey(pubkeyfile, gen_pubkey(key))
+        aeskey = gen_key()
 
         client.send(pubkeyfile)
         clientkey = get_pubkey(client.recv(1024))
+        client.send(rsaencrypt(aeskey, clientkey))
+        client.send(PLencrypt("Did you get my text?", key, aeskey))
+        if checkVerification(client, PLdecrypt(client.recv(1024), clientkey, aeskey)) == "key received":
+            message = ""
+            loginstatus = False
 
-        loginstatus = False
+            while True:
+                if loginstatus == True:
+                    client.send(PLencrypt(message+"Press: \n- 1 to create account\n- 2 to log out\n- 3 to manage passwords\n- 4 to exit", key, aeskey))
+                    response = checkVerification(client, PLdecrypt(client.recv(1024), clientkey, aeskey))
+                    
+                    if response == '1':
+                        clearscrn()
+                        message = create_account(client, key, clientkey, aeskey)
+                    
+                    elif response == '2':
+                        loginstatus = False
+                        os.chdir("..")
+                        clearscrn()
+                        message = "You are logged out\n"
+                        
+                    elif response == '3':
+                        clearscrn()
+                        manage_pass(client, key, clientkey, aeskey)
+                        
+                    elif response == '4':
+                        clearscrn()
+                        shutdown = "Goodbye"
+                        client.send(PLencrypt(shutdown, key, aeskey))
+                        print "Server now closing\n"
+                        client.shutdown(socket.SHUT_RDWR)
+                        client.close()
+                        sys.exit()
+                    else:
+                        clearscrn()
+                        message = "Choose a vaild option.\n"
+                    clearscrn()
 
-        while True:
-            if loginstatus == True:
-                client.send(rsaencrypt("Press: \n- 1 to create account\n- 2 to log out\n- 3 to manage passwords\n- 4 to exit", clientkey))
-                response = rsadecrypt(client.recv(1024), key)
-                
-                if response == '1':
-                    create_account(client, key, clientkey)
-                
-                elif response == '2':
-                    loginstatus = False
-                    os.chdir("..")
+                elif loginstatus == False:
+                    client.send(PLencrypt(message+"Press:\n- 1 to create an account\n- 2 to login\n- 3 to exit", key, aeskey))
+                    response = checkVerification(client, PLdecrypt(client.recv(1024), clientkey, aeskey))
+                    if response == '1':
+                        clearscrn()
+                        message = create_account(client, key, clientkey, aeskey)
                     
-                elif response == '3':
-                    manage_pass(client, key, clientkey)
-                    
-                elif response == '4':
-                    shutdown = "Goodbye"
-                    client.send(rsaencrypt(shutdown, clientkey))
-                    print "Server now closing"
-                    sys.exit()
-                    
-                else:
-                    client.send(rsaencrypt("Choose a vaild option.\n", clientkey))
+                    elif response == '2':
+                        clearscrn()
+                        loginstatus, message = login(client,loginstatus, key, clientkey, aeskey)
+                        
+                    elif response == '3':
+                        clearscrn()
+                        shutdown = "Goodbye"
+                        client.send(PLencrypt(shutdown, key, aeskey))
+                        print "Server now closing"
+                        sys.exit()
+                    else:
+                        clearscrn()
+                        message = "Choose a valid option.\n"
+                    clearscrn()
+        else:
+            print "Key exchange failed\n"
+            client.shutdown(socket.SHUT_RDWR)
+            client.close()
+            sys.exit(1)
 
-            elif loginstatus == False:
-                client.send(rsaencrypt("Press:\n- 1 to create an account\n- 2 to login\n- 3 to exit", clientkey))
-                response = rsadecrypt(client.recv(1024), key)
-                if response == '1':
-                    create_account(client, key, clientkey)
-                
-                elif response == '2':
-                    loginstatus = login(client,loginstatus, key, clientkey)
-                    
-                elif response == '3':
-                    shutdown = "Goodbye"
-                    client.send(rsaencrypt(shutdown, clientkey))
-                    print "Server now closing"
-                    sys.exit()
-                else:
-                    client.send(rsaencrypt("Choose a valid option.\n", clientkey))
+    client.shutdown(socket.SHUT_RDWR)
     client.close()
