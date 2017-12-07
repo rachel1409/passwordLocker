@@ -25,7 +25,7 @@ def save_pass(client, key, clientkey, aeskey):
     password = checkVerification(client, PLdecrypt(client.recv(1024), clientkey, aeskey))
     
     with open("%s.csv" % entry,"w+") as f:
-       writer = csv.writer(f)
+      writer = csv.writer(f)
       writer.writerow([aesencrypt(username, enckey("../"), gen_iv()), aesencrypt(password, enckey("../"), gen_iv())])
   else:
     clearscrn()
