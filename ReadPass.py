@@ -31,6 +31,7 @@ def read_pass(client, key, clientkey, aeskey):
 
       return contents
     else:
+      clearscrn()
       return "There is no entry with that name\n"
   else:
     clearscrn()
