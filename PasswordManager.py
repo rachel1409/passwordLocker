@@ -22,8 +22,6 @@ def manage_pass(client, key, clientkey, aeskey):
     if response == '1':
       clearscrn()
       save_pass(client, key, clientkey, aeskey)
-      clearscrn()
-      message = "Password Saved!\n"
       
     elif response == '2':
       clearscrn()
