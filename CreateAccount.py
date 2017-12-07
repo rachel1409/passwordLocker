@@ -39,7 +39,7 @@ def create_account(client, key, clientkey, aeskey):
         if username not in unames:
             if username != "":
                 while True:
-                    client.send(PLencrypt(pmessage+"Password must contain:\n-a minimum of 24 characters\n-1 uppercase letter\n-1 lowercase letter\n-1 number\n-1 symbol\nEnter a password:", key, aeskey))
+                    client.send(PLencrypt(pmessage+"Password must contain:\n-a minimum of 24 characters\n-at least 1 uppercase letter\n-at least 1 lowercase letter\n-at least 1 number\n-at least 1 symbol\nEnter a password:", key, aeskey))
                     password = checkVerification(client, PLdecrypt(client.recv(1024), clientkey, aeskey))
 
                     if pw_check(password):
