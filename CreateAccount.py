@@ -36,26 +36,25 @@ def create_account(client, key, clientkey, aeskey):
         client.send(PLencrypt(umessage+"Enter a username:", key, aeskey))
         username = checkVerification(client, PLdecrypt(client.recv(1024), clientkey, aeskey))
 
-        while True:
-            if username not in unames:
-                if username != "":
-                    client.send(PLencrypt(pmessage+"Password must contain:\n-a minimum of 24 characters\n-at least 1 uppercase letter\n-at least 1 lowercase letter\n-at least 1 number\n-at least 1 symbol\nEnter a password:", key, aeskey))
-                    password = checkVerification(client, PLdecrypt(client.recv(1024), clientkey, aeskey))
-
-                    if pw_check(password):
-                        clearscrn()
-                        retval = "Account created!\n"
-                        break
-                    else:
-                        clearscrn()
-                        pmessage = "Please enter a valid password.\n"
+        #while True:
+        if username not in unames:
+            if username != "":
+                client.send(PLencrypt(pmessage+"Password must contain:\n-a minimum of 24 characters\n-at least 1 uppercase letter\n-at least 1 lowercase letter\n-at least 1 number\n-at least 1 symbol\nEnter a password:", key, aeskey))
+                password = checkVerification(client, PLdecrypt(client.recv(1024), clientkey, aeskey))
+                if pw_check(password):
+                    clearscrn()
+                    retval = "Account created!\n"
                     break
                 else:
                     clearscrn()
-                    pmessage = "Please enter a valid username.\n"
+                    pmessage = "Please enter a valid password.\n"
+                break
             else:
                 clearscrn()
-                pmessage = "Username taken, try again.\n"
+                pmessage = "Please enter a valid username.\n"
+        else:
+            clearscrn()
+            pmessage = "Username taken, try again.\n"
 
            
     #get hash of password and store those variables instead of storing the password itself
