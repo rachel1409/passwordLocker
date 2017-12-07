@@ -46,14 +46,18 @@ def login(client, loginstatus, key, clientkey, aeskey):
                 h = hashlib.sha256()
                 h.update(password+aesdecrypt(info[1], enckey()))
                 if h.hexdigest() == aesdecrypt(info[0], enckey()):
+                    clearscrn()
                     retval = "You are logged in!\n"
                     loginstatus = True
                     os.chdir('%s' % username)
                     break
                 else:
+                    clearscrn()
                     message = "Incorrect username or password. Try again.\n"
             else:
+                clearscrn()
                 message = "Incorrect username or password. Try again.\n"
     else:
+        clearscrn()
         retval = "No accounts have been made yet. Try creating an account.\n"
     return loginstatus, retval
