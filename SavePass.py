@@ -27,7 +27,7 @@ def save_pass(client, key, clientkey, aeskey):
     with open("%s.csv" % entry,"w+") as f:
     writer = csv.writer(f)
     writer.writerow([aesencrypt(username, enckey("../"), gen_iv()), aesencrypt(password, enckey("../"), gen_iv())])
-  elif:
+  else:
     clearscrn()
     return "An entry with this name already exists.\n"    
 
