@@ -10,7 +10,6 @@ import no_bytecode
 from ClearScreen import *
 
 def read_pass(client, key, clientkey, aeskey):
-  client.send(PLencrypt("Entries: ", key, aeskey))
   contents = ""
   dir_contents = os.listdir('.')
   if dir_contents:
