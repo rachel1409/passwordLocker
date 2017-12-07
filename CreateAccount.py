@@ -8,6 +8,7 @@ from aes import *
 import os.path
 from PasswordHandler import *
 import no_bytecode
+from ClearScreen import *
 
 def checkVerification(client, message):
     if not message:
@@ -38,18 +39,22 @@ def create_account(client, key, clientkey, aeskey):
         if username not in unames:
             if username != "":
                 while True:
-                    client.send(PLencrypt(pmessage+"Password must contain:\n- a minimum of 24 characters\n-1 uppercase letter\n-1 lowercase letter\n-1number\n-1symbol\nEnter a password:", key, aeskey))
+                    client.send(PLencrypt(pmessage+"Password must contain:\n-a minimum of 24 characters\n-1 uppercase letter\n-1 lowercase letter\n-1 number\n-1 symbol\nEnter a password:", key, aeskey))
                     password = checkVerification(client, PLdecrypt(client.recv(1024), clientkey, aeskey))
 
                     if pw_check(password):
+                        clearscrn()
                         retval = "Account created!\n"
                         break
                     else:
+                        clearscrn()
                         pmessage = "Please enter a valid password.\n"
                 break
             else:
+                clearscrn()
                 pmessage = "Please enter a valid username.\n"
         else:
+            clearscrn()
             pmessage = "Username taken, try again.\n"
 
            
