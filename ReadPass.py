@@ -22,13 +22,16 @@ def read_pass(client, key, clientkey, aeskey):
       client.shutdown(socket.SHUT_RDWR)
       client.close()
       sys.exit(1)
+    
+    if os.path.isfile("%s.csv" % entry):  
+      with open("%s.csv" % entry, "r") as f:
+        reader = csv.reader(f)
+        for row in reader:
+          contents = "username: "+aesdecrypt(row[0], enckey('../'))+"\npassword: "+aesdecrypt(row[1], enckey('../'))+"\n"
 
-    with open("%s.csv" % entry, "r") as f:
-      reader = csv.reader(f)
-      for row in reader:
-        contents = "username: "+aesdecrypt(row[0], enckey('../'))+"\npassword: "+aesdecrypt(row[1], enckey('../'))+"\n"
-
-    return contents
+      return contents
+    else:
+      return "There is no entry with that name\n"
   else:
     clearscrn()
     return "There are no saved passwords\n"
