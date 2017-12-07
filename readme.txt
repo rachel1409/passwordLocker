@@ -25,3 +25,5 @@ PLcrypto.py manages message authentication
 rsa.py manages digital signatures
 
 Don't worry about file "no_bytecode".
+
+The program will generate several files: a folder for the user, several .pyc python files, and a client.pem and a server.pem
