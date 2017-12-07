@@ -1,27 +1,34 @@
 import socket
 import os
+import sys
+import csv
 import os.path
 import glob
-from rsa import *
+from PLcrypto import *
 from aes import *
 import no_bytecode
+from ClearScreen import *
 
-def read_pass(client, key, clientkey):
+def read_pass(client, key, clientkey, aeskey):
   contents = ""
   dir_contents = os.listdir('.')
   if dir_contents:
-    for file in glob.glob("*.txt"):
+    for file in glob.glob("*.csv"):
       file = file[:-4]
       print(file)
-    client.send(rsaencrypt("Enter the name of the entry you would like to read: ", clientkey))
-    entry = rsadecrypt(client.recv(1024), key)
+    client.send(PLencrypt("Enter the name of the entry you would like to read: ", key, aeskey))
+    entry = PLdecrypt(client.recv(1024), clientkey, aeskey)
+    if not entry:
+      client.shutdown(socket.SHUT_RDWR)
+      client.close()
+      sys.exit(1)
 
     with open("%s.csv" % entry, "r") as f:
-      reader = csv.reader()
+      reader = csv.reader(f)
       for row in reader:
-        for r in row:
-          contents = contents + aesdecrypt(r, key_gen()) + "\n"
+        contents = "username: "+aesdecrypt(row[0], enckey('../'))+"\npassword: "+aesdecrypt(row[1], enckey('../'))+"\n"
 
-    client.send(rsaencrypt(contents, clientkey))
+    return contents
   else:
-    client.send(rsaencrypt("There are no saved passwords", clientkey))
+    clearscrn()
+    return "There are no saved passwords\n"
