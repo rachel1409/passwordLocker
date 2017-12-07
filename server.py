@@ -55,24 +55,20 @@ if __name__ == '__main__':
 
             while True:
                 if loginstatus == True:
-                    client.send(PLencrypt(message+"Press: \n- 1 to create account\n- 2 to log out\n- 3 to manage passwords\n- 4 to exit", key, aeskey))
+                    client.send(PLencrypt(message+"Press: \n- 1 to log out\n- 2 to manage passwords\n- 3 to exit", key, aeskey))
                     response = checkVerification(client, PLdecrypt(client.recv(1024), clientkey, aeskey))
                     
                     if response == '1':
-                        clearscrn()
-                        message = create_account(client, key, clientkey, aeskey)
-                    
-                    elif response == '2':
                         loginstatus = False
                         os.chdir("..")
                         clearscrn()
                         message = "You are logged out\n"
                         
-                    elif response == '3':
+                    elif response == '2':
                         clearscrn()
                         manage_pass(client, key, clientkey, aeskey)
                         
-                    elif response == '4':
+                    elif response == '3':
                         clearscrn()
                         shutdown = "Goodbye"
                         client.send(PLencrypt(shutdown, key, aeskey))
