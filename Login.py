@@ -23,7 +23,7 @@ def login(client, loginstatus, key, clientkey, aeskey):
     data = {}
     #isEmpty = os.stat(file_name).st_size == 0
 
-    if os.path.exists(file_path):#and not isEmpty:
+    if os.path.exists(file_path):
         message = ""
         retval = ""
         with open(file_name, 'r') as f:
