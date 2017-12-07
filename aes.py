@@ -3,9 +3,14 @@ from Crypto import Random
 import base64
 
 def gen_key():
-	#key = Random.new().read(32)
-	with open('aes.txt', 'r') as f:
+	key = Random.new().read(32)
+	return base64.b64encode(key)
+	#return key
+
+def get_key(filename):
+	with open(filename, 'r') as f:
 		key = f.read()
+	#return base64.b64encode(key)
 	return key
 
 def gen_iv():
