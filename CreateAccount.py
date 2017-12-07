@@ -36,9 +36,9 @@ def create_account(client, key, clientkey, aeskey):
         client.send(PLencrypt(umessage+"Enter a username:", key, aeskey))
         username = checkVerification(client, PLdecrypt(client.recv(1024), clientkey, aeskey))
 
-        if username not in unames:
-            if username != "":
-                while True:
+        while True:
+            if username not in unames:
+                if username != "":
                     client.send(PLencrypt(pmessage+"Password must contain:\n-a minimum of 24 characters\n-at least 1 uppercase letter\n-at least 1 lowercase letter\n-at least 1 number\n-at least 1 symbol\nEnter a password:", key, aeskey))
                     password = checkVerification(client, PLdecrypt(client.recv(1024), clientkey, aeskey))
 
@@ -48,14 +48,14 @@ def create_account(client, key, clientkey, aeskey):
                         break
                     else:
                         clearscrn()
-                        return "\nPlease enter a valid password.\n"
-                break
+                        pmessage = "Please enter a valid password.\n"
+                    break
+                else:
+                    clearscrn()
+                    pmessage = "Please enter a valid username.\n"
             else:
                 clearscrn()
-                return \n"Please enter a valid username.\n"
-        else:
-            clearscrn()
-            return "\nUsername taken, try again.\n"
+                pmessage = "Username taken, try again.\n"
 
            
     #get hash of password and store those variables instead of storing the password itself
