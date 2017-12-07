@@ -48,14 +48,14 @@ def create_account(client, key, clientkey, aeskey):
                         break
                     else:
                         clearscrn()
-                        pmessage = "Please enter a valid password.\n"
+                        return "\nPlease enter a valid password.\n"
                 break
             else:
                 clearscrn()
-                pmessage = "Please enter a valid username.\n"
+                return \n"Please enter a valid username.\n"
         else:
             clearscrn()
-            pmessage = "Username taken, try again.\n"
+            return "\nUsername taken, try again.\n"
 
            
     #get hash of password and store those variables instead of storing the password itself
