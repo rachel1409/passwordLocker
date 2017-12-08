@@ -18,6 +18,8 @@ ReadPass.py reads saved user passwords
 
 SavePass.py saves user passwords
 
+DeletePass.py deletes user passwords
+
 aes.py manages our encryption function file for AES
 
 PLcrypto.py manages message authentication
