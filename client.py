@@ -46,7 +46,7 @@ if __name__ == '__main__':
     if not aeskey:
         sys.exit(1)
     challenge = checkVerification(server, PLdecrypt(server.recv(1024), serverkey, aeskey))
-    server.sendall(PLencrypt(str(int(challenge)/17), key, aeskey))
+    server.sendall(PLencrypt(str(float(challenge)/17), key, aeskey))
 
     while True:
         response = checkVerification(server, PLdecrypt(server.recv(1024), serverkey, aeskey))
