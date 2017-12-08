@@ -45,26 +45,19 @@ if __name__ == '__main__':
     aeskey = rsadecrypt(server.recv(1024), key)
     if not aeskey:
         sys.exit(1)
-    if checkVerification(server, PLdecrypt(server.recv(1024), serverkey, aeskey)):
-        server.sendall(PLencrypt("key received", key, aeskey))
+    challenge = checkVerification(server, PLdecrypt(server.recv(1024), serverkey, aeskey))
+    server.sendall(PLencrypt(str(int(challenge)/17), key, aeskey))
 
-        while True:
-            #switch this on and removing everything below it will fix the bug where we cant send multiple messages to the client.
-            #When it errors out, it spams a ton of text for about a minute so lets debug the rest of the program before we tackle the threading issue
-
-            #threading.Thread(target=recv).start() 
-            
-            response = checkVerification(server, PLdecrypt(server.recv(1024), serverkey, aeskey))
-
-            if response == "Goodbye":
-                server.shutdown(socket.SHUT_RDWR)
-                server.close()
-                sys.exit()
-            else:
-                while True:
-                    print response
-                    data = raw_input()
-                    
-                    if data:
-                        server.sendall(PLencrypt(data, key, aeskey))
-                        break
+    while True:
+        response = checkVerification(server, PLdecrypt(server.recv(1024), serverkey, aeskey))
+        if response == "Goodbye":
+            server.shutdown(socket.SHUT_RDWR)
+            server.close()
+            sys.exit()
+        else:
+            while True:
+                print response
+                data = raw_input()         
+                if data:
+                    server.sendall(PLencrypt(data, key, aeskey))
+                    break
