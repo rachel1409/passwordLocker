@@ -7,6 +7,7 @@ from PasswordManager import *
 from rsa import *
 from PLcrypto import *
 import no_bytecode
+import random
 
 def connect():
     host = "127.0.0.1"
@@ -48,8 +49,9 @@ if __name__ == '__main__':
         client.send(pubkeyfile)
         clientkey = get_pubkey(client.recv(1024))
         client.send(rsaencrypt(aeskey, clientkey))
-        client.send(PLencrypt("Did you get my text?", key, aeskey))
-        if checkVerification(client, PLdecrypt(client.recv(1024), clientkey, aeskey)) == "key received":
+        challenge = random.random()
+        client.send(PLencrypt(str(challenge), key, aeskey))
+        if checkVerification(client, PLdecrypt(client.recv(1024), clientkey, aeskey)) == str(challenge/17):
             message = ""
             loginstatus = False
 
