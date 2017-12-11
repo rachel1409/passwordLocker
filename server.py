@@ -49,9 +49,9 @@ if __name__ == '__main__':
         client.send(pubkeyfile)
         clientkey = get_pubkey(client.recv(1024))
         client.send(rsaencrypt(aeskey, clientkey))
-        challenge = random.random()
-        client.send(PLencrypt(str(challenge), key, aeskey))
-        if checkVerification(client, PLdecrypt(client.recv(1024), clientkey, aeskey)) == str(challenge/17):
+        nonce = random.random()
+        client.send(PLencrypt(str(nonce), key, aeskey))
+        if checkVerification(client, PLdecrypt(client.recv(1024), clientkey, aeskey)) == str(nonce-1):
             message = ""
             loginstatus = False
 
