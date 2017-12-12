@@ -49,6 +49,8 @@ if __name__ == '__main__':
         client.send(pubkeyfile)
         clientkey = get_pubkey(client.recv(1024))
         client.send(rsaencrypt(aeskey, clientkey))
+        # server creates random nonce and sends to client encrypted in session key
+        # if the client returns the nonce correctly modified, the Password Locker program will run
         nonce = random.random()
         client.send(PLencrypt(str(nonce), key, aeskey))
         if checkVerification(client, PLdecrypt(client.recv(1024), clientkey, aeskey)) == str(nonce-1):
