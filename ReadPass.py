@@ -18,12 +18,13 @@ def read_pass(client, key, clientkey, aeskey):
       print(file)
     client.send(PLencrypt("Enter the name of the entry you would like to read: ", key, aeskey))
     entry = PLdecrypt(client.recv(1024), clientkey, aeskey)
-    if not entry:
+    if not entry: # verification failed - shutdown connection
       client.shutdown(socket.SHUT_RDWR)
       client.close()
       sys.exit(1)
     
-    if os.path.isfile("%s.csv" % entry):  
+    if os.path.isfile("%s.csv" % entry): 
+      # decrypt username and password and save both in variable
       with open("%s.csv" % entry, "r") as f:
         reader = csv.reader(f)
         for row in reader:
