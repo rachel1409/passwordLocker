@@ -8,11 +8,12 @@ from aes import *
 from PLcrypto import *
 from server import *
 
+# checks if signature was verified
 def checkVerification(client, message):
-    if not message:
+    if not message: #shutdown connection
         client.shutdown(socket.SHUT_RDWR)
         client.close()
-        sys.exit(1)
+        sys.exit(1) #return an error
     else:
         return message
 
@@ -26,6 +27,8 @@ def login(client, loginstatus, key, clientkey, aeskey):
     if os.path.exists(file_path):
         message = ""
         retval = ""
+        # read in all saved username/password pairs and store in dictionary
+        # only decrypt the username for security reasons
         with open(file_name, 'r') as f:
             reader = csv.reader(f)
             for row in reader:
@@ -38,6 +41,7 @@ def login(client, loginstatus, key, clientkey, aeskey):
             client.send(PLencrypt("Enter your password:", key, aeskey))
             password = checkVerification(client, PLdecrypt(client.recv(1024), clientkey, aeskey))
 
+            # AMB - hash the given password with the stored salt and compare to stored password
             if username in data:
                 info = data[username]
                 h = hashlib.sha256()
@@ -46,6 +50,7 @@ def login(client, loginstatus, key, clientkey, aeskey):
                     clearscrn()
                     retval = "You are logged in!\n"
                     loginstatus = True
+                    # change to user's directory
                     os.chdir('%s' % username)
                     break
                 else:
