@@ -10,8 +10,9 @@ from PasswordHandler import *
 import no_bytecode
 from ClearScreen import *
 
+# check if digital signature was verified
 def checkVerification(client, message):
-    if not message:
+    if not message: #shutdown connection
         client.shutdown(socket.SHUT_RDWR)
         client.close()
         sys.exit(1)
@@ -24,9 +25,11 @@ def create_account(client, key, clientkey, aeskey):
     umessage = ""
     pmessage = ""
     retval = "The account could not be created\n"
+    # if there are no previous users, create login file
     if not os.path.isfile(file_name):
         w = open(file_name, "w+")
         w.close()
+    # read in usernames from stored username/password file and save in list
     with open(file_name, "r") as read_file:
         reader = csv.reader(read_file)
         for row in reader:
@@ -57,7 +60,7 @@ def create_account(client, key, clientkey, aeskey):
             umessage = "Username taken, try again.\n"
 
            
-    #get hash of password and store those variables instead of storing the password itself
+    # AMB - create salt and hash password and salt combination with SHA256
     psSalt = os.urandom(256)
     psHash = hashlib.sha256()
     psHash.update(password+psSalt.encode('base-64'))
@@ -65,6 +68,7 @@ def create_account(client, key, clientkey, aeskey):
     directory = username
     if not os.path.exists(directory): #creates a directory named after the user that will act as the storage location for their passwords
         os.makedirs(directory)
+    # save username, hashed password, and salt in login file (all encrypted in AES-256 CBC mode
     with open(file_name, "a") as f:
         writer = csv.writer(f)
         writer.writerow([aesencrypt(username, enckey(), gen_iv()), aesencrypt(psHash.hexdigest(), enckey(), gen_iv()), aesencrypt(psSalt.encode('base-64'), enckey(), gen_iv())])
