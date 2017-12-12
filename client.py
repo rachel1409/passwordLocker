@@ -25,8 +25,9 @@ def recv():
                 server.sendall(rsaencrypt(data, serverkey))
                 break
 
+# check if signature was verified
 def checkVerification(server, message):
-    if not message:
+    if not message: #shutdown connection
         server.shutdown(socket.SHUT_RDWR)
         server.close()
         sys.exit(1)
@@ -45,6 +46,9 @@ if __name__ == '__main__':
     aeskey = rsadecrypt(server.recv(1024), key)
     if not aeskey:
         sys.exit(1)
+    # server sends client a nonce (a new one is created each time connection is made)
+    # client can only access nonce with session key
+    # client sends back modified nonce to confirm that the session key has been received
     nonce = checkVerification(server, PLdecrypt(server.recv(1024), serverkey, aeskey))
     server.sendall(PLencrypt(str(float(nonce)-1), key, aeskey))
 
