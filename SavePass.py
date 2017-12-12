@@ -8,8 +8,9 @@ from aes import *
 from ClearScreen import *
 import no_bytecode
 
+# check if signature is verified
 def checkVerification(client, message):
-  if not message:
+  if not message: #shutdown connection
     client.shutdown(socket.SHUT_RDWR)
     client.close()
     sys.exit(1)
@@ -25,6 +26,7 @@ def save_pass(client, key, clientkey, aeskey):
     client.send(PLencrypt("Enter a password:", key, aeskey))
     password = checkVerification(client, PLdecrypt(client.recv(1024), clientkey, aeskey))
     
+    # write encrypted username and password to new entry's file
     with open("%s.csv" % entry,"w+") as f:
       writer = csv.writer(f)
       writer.writerow([aesencrypt(username, enckey("../"), gen_iv()), aesencrypt(password, enckey("../"), gen_iv())])
